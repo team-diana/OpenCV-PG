@@ -1,0 +1,10 @@
+Network configuration: 
+
+Camera should be connected to an ethernet switch and the Tp-Link Access Point with enabled DHCP 
+when DHCP is enabled on the network the camera should blink 2 times the green light after the FPGA set orange flash when power on
+if blinks 3 or red there is a network issue (router Sitecom DIANA is stupid and sometimes fails, Tplink AP works fine) 
+try to launch FlyCap2 to see the camera listing
+Ip address assigned is not important because Flycap gets camera info 
+
+BFLY 13E4C-CS is the turret camera 
+BFLY 13E4M-CS is the (arm?) camera 
