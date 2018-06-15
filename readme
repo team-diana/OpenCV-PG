@@ -1,3 +1,9 @@
 To compile:
 
 g++ -std=c++11 mycppfile.cpp -I/usr/include/flycapture -lflycapture `pkg-config --libs --cflags opencv` -o mycppfile
+
+sudo sysctl -w net.core.rmem_max=1048576 net.core.rmem_default=1048576
+
+Note: In order for these changes to persist after system reboots, the following lines must be manually added to the bottom of the /etc/sysctl.conf file:
+net.core.rmem_max=1048576
+net.core.rmem_default=1048576
