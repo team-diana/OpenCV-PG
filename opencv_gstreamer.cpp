@@ -117,7 +117,7 @@ int lost =0;
 
 //--------- TCP Server Section ****************************
 bool searching=false;
-int mousex, mousey, threshold;
+int mousex, mousey, xtmp, ytmp, threshold;
 int set=0;
 bool overlays=false;
 TcpServerx::TcpServer(PORT);
@@ -169,7 +169,24 @@ while(key != 'q'){
              //key = cv::waitKey(10);
              //processKeyEvent(zed, key);
         }
+    mousex=TcpServerx::readLast8();
+    mousey=TcpServery::readLast8();
+    threshold=TcpServertr::readLast8();
+    searching=TcpServersearching::readLast8();
     set=TcpServerinput::readLast8();
+
+   //adapt mouse values
+   xtmp=(mousex*2)-1280;
+   ytmp=(mousey*2);
+   if(xtmp>0)
+   {
+     mousex=xtmp;
+   }
+   if (ytmp<1024)
+   {
+     mousey=ytmp;
+   }
+
     //apply stefano class ArmVision and CacheFinder and select various options
     switch (set)
       {
@@ -193,10 +210,6 @@ while(key != 'q'){
          overlays=true;      //Enables overlays
 
       }
-
-
-
-
 
    // *** Export Images to main window to stream
   matPG.copyTo(win_mat(cv::Rect(  0, 0, 1280, 1024)));
