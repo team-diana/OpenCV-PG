@@ -6,8 +6,32 @@
 using namespace cv;
 using namespace std;
 
+// Mouse callback function
+void CallBack(int event, int x, int y, int flags, void* userdata)
+{
+  if(event == EVENT_LBUTTONDOWN)
+  {
+    mousex = x;
+    mousey = y;
+    searching = true;
+  }
+  else if(event == EVENT_MBUTTONDOWN)
+    searching = false;
+}
+
+// Trackbar callback function
+void trackbarCallBack( int, void* )
+{
+  tgap = slider_val * 5;
+}
+
 int main( int argc, char** argv )
 {
+
+  namedWindow("Vision", WINDOW_AUTOSIZE);
+  setMouseCallback("ArmVision", CallBack, NULL);
+  createTrackbar( "Threshold", "ArmVision", &slider_val, 20, trackbarCallBack );
+
     // The sink caps for the 'rtpjpegdepay' need to match the src caps of the 'rtpjpegpay' of the sender pipeline
     // Added 'videoconvert' at the end to convert the images into proper format for appsink, without
     // 'videoconvert' the receiver will not read the frames, even though 'videoconvert' is not present
@@ -29,9 +53,9 @@ int main( int argc, char** argv )
         if(frame.empty())
             break;
 
-        imshow("Receiver", frame);
+        imshow("Vision", frame);
         if(waitKey(1) == 'r')
             break;
     }
-    destroyWindow("Receiver");
+    destroyWindow("Vision");
 }
