@@ -93,7 +93,7 @@ VideoCapture cap(0);
  // if not success, exit program
  if (cap.isOpened() == false)
  {
-  cout << "Cannot open the video camera" << endl;
+  cout << "Cannot open the ARM camera" << endl;
   return -1;
  }
    Mat matARM;
