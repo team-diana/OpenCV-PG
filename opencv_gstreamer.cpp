@@ -4,14 +4,14 @@
 #include <iostream>
 #include <sl_zed/Camera.hpp>
 #include <SaveDepth.hpp>
-using namespace FlyCapture2;
-using namespace sl;
+//using namespace FlyCapture2;
+//using namespace sl;
 
 cv::Mat slMat2cvMat(Mat& input);
 int main()
 {
  //  *******************  ZED section of setup code  ********************************+
-
+  using namespace sl;
   // Create a ZED camera object
   Camera zed;
 
@@ -47,7 +47,7 @@ int main()
 
 
 //  *****************  Point Grey Section of setup code  **************************
-
+    using namespace FlyCapture2;
     Error error;
     Camera camera;
     CameraInfo camInfo;
