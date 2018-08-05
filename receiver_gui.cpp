@@ -51,8 +51,8 @@ if(!TcpClienttr::isConnected()){
 }
 
   namedWindow("Vision", WINDOW_AUTOSIZE);
-  setMouseCallback("ArmVision", CallBack, NULL);
-  createTrackbar( "Threshold", "ArmVision", &slider_val, 20, trackbarCallBack );
+  setMouseCallback("Vision", CallBack, NULL);
+  createTrackbar( "Threshold", "Vision", &slider_val, 20, trackbarCallBack );
 
     // The sink caps for the 'rtpjpegdepay' need to match the src caps of the 'rtpjpegpay' of the sender pipeline
     // Added 'videoconvert' at the end to convert the images into proper format for appsink, without
