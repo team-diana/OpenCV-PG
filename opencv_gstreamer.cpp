@@ -43,7 +43,7 @@ int main()
   cv::Mat image_ocv = slMat2cvMat(image_zed);
   Mat depth_image_zed(new_width, new_height, MAT_TYPE_8U_C4);
   cv::Mat depth_image_ocv = slMat2cvMat(depth_image_zed);
-  
+
 
 
 //  *****************  Point Grey Section of setup code  **************************
@@ -132,7 +132,7 @@ while(key != 'q'){
 	cv::Mat matPG = cv::Mat(rgb.GetRows(), rgb.GetCols(), CV_8UC3, rgb.GetData(),row);
 
    // ^^^^^^^ ARM camera acquisition ************************
-   cap >> frame; // get a new frame from camera
+   cap >> matARM; // get a new frame from camera
 
    // ^^^^^^^ ZED acquisition ******************************+
 
