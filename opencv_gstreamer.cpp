@@ -85,7 +85,7 @@ int main()
         return false;
     }
 
-
+using namespace cv;
 // ****************************  ARM camera setup section *******************************
 
 VideoCapture cap(0);
