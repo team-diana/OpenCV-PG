@@ -6,8 +6,10 @@
 #include <SaveDepth.hpp>
 //using namespace FlyCapture2;
 //using namespace sl;
+using namespace cv;
 
 cv::Mat slMat2cvMat(Mat& input);
+
 int main()
 {
  //  *******************  ZED section of setup code  ********************************+
