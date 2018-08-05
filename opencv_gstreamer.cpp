@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sl_zed/Camera.hpp>
 #include <SaveDepth.hpp>
+#define PORT 50210
 //using namespace FlyCapture2;
 //using namespace sl;
 using namespace cv;
@@ -114,6 +115,22 @@ else {
 char key = 0;
 int lost =0;
 
+//--------- TCP Server Section ****************************
+bool searching=false;
+int mousex, mousey, threshold;
+int set=0;
+bool overlays=false;
+TcpServerx::TcpServer(PORT);
+TcpServerx::start8();
+TcpServery::TcpServer(PORT+1);
+TcpServery::start8();
+TcpServertr::TcpServer(PORT+2);
+TcpServertr::start8();
+TcpServerinput::TcpServer(PORT+3);
+TcpServerinput::start8();
+TcpServersearching::TcpServer(PORT+4);
+TcpServersearching::start8();
+
 // ^^^^^^^^^^^^^ Acquisition Cycle **********************************
 while(key != 'q'){
 
@@ -152,6 +169,35 @@ while(key != 'q'){
              //key = cv::waitKey(10);
              //processKeyEvent(zed, key);
         }
+    set=TcpServerinput::readLast8();
+    //apply stefano class ArmVision and CacheFinder and select various options
+    switch (set)
+      {
+         case 1 :
+         matPG=matPG; //standard image Pointgrey
+         case 2 :
+         matARM=matARM; //standard image ARMcamera
+         case 3 :
+         matPG=ARMVision(matPG, mousex, mousey, searching); //ArmVision Pointgrey
+         case 4 :
+         matARM=ARMVision(matARM, mousex, mousey, searching); //ArmVision ARMcamera
+         case 5 :
+         matPG=CacheFinder(matPG); //CacheFinder Pointgrey
+         case 6 :
+         matARM=CacheFinder(matARM); //CacheFinder ArmCamera
+         case 7 :
+         image_zed=image_zed; //Standard ZED
+         case 8 :
+         image_zed=CacheFinder(image_zed); //ZED CacheFinder
+         case 9 :
+         overlays=true;      //Enables overlays
+
+      }
+
+
+
+
+
    // *** Export Images to main window to stream
   matPG.copyTo(win_mat(cv::Rect(  0, 0, 1280, 1024)));
   matARM.copyTo(win_mat(cv::Rect(1280, 0, 1280, 1024)));
@@ -159,6 +205,7 @@ while(key != 'q'){
   depth_image_zed.copyTo(win_mat(cv::Rect(1280, 1024, 1280, 720)));
 	out.write(win_mat);
 	key= cv::waitKey(30);
+
 }
 
 // **** CLOSING section ***********
