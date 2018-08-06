@@ -1,4 +1,4 @@
-#include "FlyCapture2.h"
+#include <flycapture/FlyCapture2.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
@@ -59,7 +59,7 @@ int main()
     error = camera.Connect( 0 );
     if ( error != PGRERROR_OK )
     {
-        std::cout << "Failed to connect to camera" << std::endl;
+        std::cout << "Failed to connect to camera PG" << std::endl;
         return false;
     }
 
@@ -67,7 +67,7 @@ int main()
     error = camera.GetCameraInfo( &camInfo );
     if ( error != PGRERROR_OK )
     {
-        std::cout << "Failed to get camera info from camera" << std::endl;
+        std::cout << "Failed to get camera info from camera PG" << std::endl;
         return false;
     }
     std::cout << camInfo.vendorName << " "
@@ -77,12 +77,12 @@ int main()
     error = camera.StartCapture();
     if ( error == PGRERROR_ISOCH_BANDWIDTH_EXCEEDED )
     {
-        std::cout << "Bandwidth exceeded" << std::endl;
+        std::cout << "PG :Bandwidth exceeded" << std::endl;
         return false;
     }
     else if ( error != PGRERROR_OK )
     {
-        std::cout << "Failed to start image capture" << std::endl;
+        std::cout << "PG: Failed to start image capture" << std::endl;
         return false;
     }
 
@@ -94,23 +94,23 @@ VideoCapture cap(0);
  // if not success, exit program
  if (cap.isOpened() == false)
  {
-  cout << "Cannot open the ARM camera" << endl;
+  std::cout << "Cannot open the ARM camera" << std::endl;
   return -1;
  }
    Mat matARM;
 
 // *********************** Streaming window setup and Gstreamer Pipeline *********************
-   Mat win_mat;
+
 cv::Mat win_mat(cv::Size(2560, 1774), CV_8UC3);
 
 cv::VideoWriter out("appsrc ! videoscale ! videoconvert ! video/x-raw,format=YUY2,width=1280,height=887, framerate=50/1 ! jpegenc quality=50! rtpjpegpay ! udpsink host=10.0.0.102 port=50205", 1800,0,50, cv::Size(2560,1774), true);
 
 if (out.isOpened()){
-	puts("Pipeline Opened");
+	puts("Pipeline GST Opened");
 }
 
 else {
-	puts("Pipeline Broken");
+	puts("Pipeline GST Broken");
 }
 char key = 0;
 int lost =0;
@@ -234,3 +234,20 @@ while(key != 'q'){
 
     return 0;
 }
+cv::Mat slMat2cvMat(Mat& input) {
+    // Mapping between MAT_TYPE and CV_TYPE
+    int cv_type = -1;
+    switch (input.getDataType()) {
+        case MAT_TYPE_32F_C1: cv_type = CV_32FC1; break;
+        case MAT_TYPE_32F_C2: cv_type = CV_32FC2; break;
+        case MAT_TYPE_32F_C3: cv_type = CV_32FC3; break;
+        case MAT_TYPE_32F_C4: cv_type = CV_32FC4; break;
+        case MAT_TYPE_8U_C1: cv_type = CV_8UC1; break;
+        case MAT_TYPE_8U_C2: cv_type = CV_8UC2; break;
+        case MAT_TYPE_8U_C3: cv_type = CV_8UC3; break;
+        case MAT_TYPE_8U_C4: cv_type = CV_8UC4; break;
+        default: break;
+    }
+    // Since cv::Mat data requires a uchar* pointer, we get the uchar1 pointer from sl::Mat (getPtr<T>())
+    // cv::Mat and sl::Mat will share a single memory structure
+    return cv::Mat(input.getHeight(), input.getWidth(), cv_type, input.getPtr<sl::uchar1>(MEM_CPU));
