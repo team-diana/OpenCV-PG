@@ -86,24 +86,34 @@ int main()
         return false;
     }
 
-using namespace cv;
-// ****************************  ARM camera setup section *******************************
 
+// ****************************  ARM camera setup section *******************************
+using namespace cv;
 VideoCapture cap(0);
 
- // if not success, exit program
+
+const double fps = cap.get(CAP_PROP_FPS);
+const int width  = cap.get(CAP_PROP_FRAME_WIDTH);
+const int height = cap.get(CAP_PROP_FRAME_HEIGHT);
+const int fourcc = cap.get(CAP_PROP_FOURCC );
+
+// printf("%d", cap.get(CV_CAP_PROP_CONVERT_RGB));
+cv::Mat matARM(width, height, CV_8UC3);
+
+
+ //if not success, exit program
  if (cap.isOpened() == false)
  {
   std::cout << "Cannot open the ARM camera" << std::endl;
   return -1;
  }
-   Mat matARM;
+
 
 // *********************** Streaming window setup and Gstreamer Pipeline *********************
 
-cv::Mat win_mat(cv::Size(2560, 1774), CV_8UC3);
+cv::Mat win_mat(cv::Size(2600, 2600), CV_8UC3);
 
-cv::VideoWriter out("appsrc ! videoscale ! videoconvert ! video/x-raw,format=YUY2,width=1280,height=887, framerate=50/1 ! jpegenc quality=50! rtpjpegpay ! udpsink host=10.0.0.102 port=50205", 1800,0,50, cv::Size(2560,1774), true);
+cv::VideoWriter out("appsrc ! videoscale ! videoconvert ! video/x-raw,format=YUY2,width=1280,height=768, framerate=50/1 ! jpegenc quality=50 ! rtpjpegpay ! udpsink host=127.0.0.1 port=50215", fourcc, fps, cv::Size(width,height), true);
 
 if (out.isOpened()){
 	puts("Pipeline GST Opened");
@@ -169,6 +179,9 @@ while(key != 'q'){
              //key = cv::waitKey(10);
              //processKeyEvent(zed, key);
         }
+
+  //--------- TCP Server Section ****************************
+
     mousex=TcpServerx::readLast8();
     mousey=TcpServery::readLast8();
     threshold=TcpServertr::readLast8();
@@ -211,13 +224,25 @@ while(key != 'q'){
 
       }
 
-   // *** Export Images to main window to stream
-  matPG.copyTo(win_mat(cv::Rect(  0, 0, 1280, 1024)));
-  matARM.copyTo(win_mat(cv::Rect(1280, 0, 1280, 1024)));
-  image_zed.copyTo(win_mat(cv::Rect(  0, 1024, 1280, 720)));
-  depth_image_zed.copyTo(win_mat(cv::Rect(1280, 1024, 1280, 720)));
-	out.write(win_mat);
-	key= cv::waitKey(30);
+      // *** Export Images to main window to stream
+       matPG.copyTo(win_mat(cv::Rect(  0, 0, 1280, 1024)));
+       matARM.copyTo(win_mat(cv::Rect(1300, 300, width, height)));
+       image_zed.copyTo(win_mat(cv::Rect(  0, 1024, 1280, 720)));
+       depth_image_zed.copyTo(win_mat(cv::Rect(1300, 1024, 1280, 720)));
+       namedWindow( "Display window", WINDOW_AUTOSIZE );
+
+       //opportunely resized
+      Size size0(2600, 2080);
+      cv::resize(win_mat, win_mat, size0);
+      Size size1(1280, 1024);
+      Mat out1;
+       cv::resize(win_mat, out1, size1, INTER_CUBIC );
+      
+      imshow( "Display window", out1 );
+     // imshow( "Display", matARM );
+      out.write(out1);
+   	key= cv::waitKey(10);
+   puts("output");
 
 }
 
